@@ -7,5 +7,5 @@ import java.util.List;
 
 @Getter @Setter
 public class ListResponseDto<T> extends CommonResponseDto {
-    private List<T> list;
+    private List<T> response;
 }

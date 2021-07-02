@@ -8,13 +8,14 @@ import java.sql.Timestamp;
 
 @Getter @Setter
 public class CommonResponseDto {
-
+    /*
     public CommonResponseDto(){
         setTimestamp(new Timestamp(System.currentTimeMillis()));
     }
 
     @JsonFormat(timezone ="Asia/Seoul", shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Timestamp timestamp;
+    */
 
     private int status;
 
