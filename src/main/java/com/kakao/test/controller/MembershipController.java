@@ -1,13 +1,15 @@
 package com.kakao.test.controller;
 
-import com.kakao.test.common.ListResponseDto;
-import com.kakao.test.common.SingleResponseDto;
+import com.kakao.test.common.*;
 import com.kakao.test.domain.Membership;
+import com.kakao.test.domain.param.AddPointParam;
 import com.kakao.test.service.MembershipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,24 +22,86 @@ public class MembershipController {
     @PostMapping(value="/membership", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public SingleResponseDto<Membership> enrollMembership(@RequestBody Membership membership)
     {
-        SingleResponseDto response = new SingleResponseDto();
+
+        SingleResponseDto<Membership> result = new SingleResponseDto<>();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        membership.setUserId("test1");
+        membership.setMembershipStatus("Y");
+        membership.setStartDate("2021-06-20");
+
         Long seq = membershipService.enrollMembership(membership);
         Membership savedMembership = membershipService.findOneMembership(seq);
-        System.out.println("membershipId : "+savedMembership.getMembershipId());
-        System.out.println("membershipName : "+savedMembership.getMembershipName());
+
+
         if(savedMembership!=null) {
-            response.setData(savedMembership);
+            result.setSuccess(true);
+            result.setResponse(savedMembership);
+        }else{
+            result.setSuccess(false);
         }
-        return response;
+
+        return result;
     }
 
     @GetMapping(value="/membership", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ListResponseDto<Membership> findMemberships(){
-        ListResponseDto<Membership> response = new ListResponseDto<>();
+        ListResponseDto<Membership> result = new ListResponseDto<>();
         List<Membership> membershipList = membershipService.findMemberships();
-        response.setList(membershipList);
-        return response;
+
+
+        if(membershipList!=null)
+        {
+            result.setSuccess(true);
+            result.setResponse(membershipList);
+        }else{
+            ErrorDto errorDto = new ErrorDto();
+            errorDto.setMessage("membershipId must be provided");
+            errorDto.setStatus(400);
+            result.setError(errorDto);
+        }
+        return result;
     }
+    @GetMapping(value="/membership/{membershipId}")
+    public SingleResponseDto<Membership> findByMembershipId(@PathVariable("membershipId") String membershipId){
+        SingleResponseDto result = new SingleResponseDto();
+        Membership membership = membershipService.findByMembershipId(membershipId);
+
+        if(membership!=null)
+        {
+            result.setSuccess(true);
+            result.setResponse(membership);
+        }
+
+        return result;
+    }
+
+    @DeleteMapping(value="/membership/{membershipId}")
+    public BooleanResponseDto deleteMembership(@PathVariable("membershipId") String membershipId){
+        BooleanResponseDto result = new BooleanResponseDto();
+
+        Long seq = membershipService.deleteMembership(membershipId);
+        Membership membership = membershipService.findOneMembership(seq);
+        if(membership.getMembershipStatus().equals("N")){
+            result.setSuccess(true);
+            result.setResponse(true);
+        }
+
+        return result;
+    }
+
+    @PutMapping(value="/membership/point" , consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public BooleanResponseDto addPointMembership(@RequestBody AddPointParam addPointParam)
+    {
+        BooleanResponseDto result = new BooleanResponseDto();
+        membershipService.addPointMembership(addPointParam);
+
+        result.setResponse(true);
+        result.setSuccess(true);
+
+        return result;
+    }
+
 
 
 }

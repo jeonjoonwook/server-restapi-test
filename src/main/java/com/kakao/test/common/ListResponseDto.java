@@ -1,3 +1,4 @@
+
 package com.kakao.test.common;
 
 import lombok.Getter;
@@ -9,3 +10,4 @@ import java.util.List;
 public class ListResponseDto<T> extends CommonResponseDto {
     private List<T> response;
 }
+

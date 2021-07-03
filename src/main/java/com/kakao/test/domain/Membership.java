@@ -16,6 +16,8 @@ public class Membership {
 
     private String membershipId;
 
+    private String userId;
+
     private String membershipName;
 
     private String startDate;

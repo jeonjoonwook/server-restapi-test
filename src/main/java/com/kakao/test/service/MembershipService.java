@@ -1,6 +1,7 @@
 package com.kakao.test.service;
 
 import com.kakao.test.domain.Membership;
+import com.kakao.test.domain.param.AddPointParam;
 import com.kakao.test.repository.MembershipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,22 @@ public class MembershipService {
     public Membership findOneMembership(Long seq)
     {
         return membershipRepository.findOneMembership(seq);
+    }
+
+    public Membership findByMembershipId(String membershipId){return membershipRepository.findByMembershipId(membershipId);}
+
+    public Long deleteMembership(String membershipId){
+        Membership membership = membershipRepository.findByMembershipId(membershipId);
+        membershipRepository.deleteMembership(membership.getSeq());
+        return membership.getSeq();
+    }
+
+    public void addPointMembership(AddPointParam addPointParam)
+    {
+        Membership membership = membershipRepository.findByMembershipId(addPointParam.getMembershipId());
+        int point = membership.getPoint();
+        point = point + addPointParam.getAmount()/100;
+        membershipRepository.updateMembershipPoint(membership.getSeq(),point);
     }
 
 }
